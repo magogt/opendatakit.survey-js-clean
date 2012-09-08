@@ -2,7 +2,7 @@
 // depends upon: controller, zepto, promptTypes
 define(['controller', 'zepto', 'promptTypes'], function(controller, $, promptTypes) {
     return {
-        initializePrompts: function(form, prompts) {
+    initializePrompts: function(form, continuation) {
             function findObjectWithPair(objectArray, searchKey, searchValue) {
                 for (var obby in objectArray) {
                     if (searchKey in obby) {
@@ -14,7 +14,7 @@ define(['controller', 'zepto', 'promptTypes'], function(controller, $, promptTyp
                 return null;
             }
             var initializedPrompts = [];
-            $.each(prompts, function(idx, item) {
+        $.each(form.prompts, function(idx, item) {
                 var PromptType;
 
                 if (!('type' in item)) {
@@ -39,13 +39,12 @@ define(['controller', 'zepto', 'promptTypes'], function(controller, $, promptTyp
                     form: form,
                     promptIdx: idx
                 }, item));
-                initializedPrompts.push(new PromptClass({
-                    model: {} //TODO: Do we want to keep track of the model on the prompts?
-                }));
+            initializedPrompts.push(new PromptClass());
             });
-            return initializedPrompts;
+		form.prompts = initializedPrompts;
+        continuation();
         },
-        buildSurvey: function(surveyJson) {
+	buildSurvey:function(surveyJson, continuation){
             var that = this;
             var settings = {};
             if ('settings' in surveyJson) {
@@ -66,9 +65,6 @@ define(['controller', 'zepto', 'promptTypes'], function(controller, $, promptTyp
                 $.extend(column_types, surveyJson.column_types);
             }
             var form = {
-                initialize: function() {
-                    this.prompts = that.initializePrompts(this, this.prompts);
-                },
                 prompts: surveyJson.survey,
                 choices: surveyJson.choices,
                 settings: settings,
@@ -77,34 +73,40 @@ define(['controller', 'zepto', 'promptTypes'], function(controller, $, promptTyp
             };
             form.prompts = ([{
                 "type": "goto",
-                "param": "begin"
+                "param": "_begin"
             }, {
                 type: "instances",
                 name: "_instances",
                 label: "Saved Instances"
+            }, {
+                "type": "label",
+                "param": "_output"
             }, {
                 type: "json",
                 name: "_json",
                 label: "JSON formatted survey answers"
             }, {
                 "type": "label",
-                "param": "begin"
+                "param": "_begin"
             }, {
                 type: "opening",
                 name: "_opening",
                 label: "opening page"
-            }]).concat(form.prompts);
-
-            form.prompts.push({
-                "type": "hierarchy",
+            }]).concat(form.prompts).concat([{
+                type: "finalize",
+                name: "_finalize",
+                label: "Save Form"
+            }, {
+                type: "hierarchy",
                 name: "_hierarchy"
-            });
+            }]);
 
             console.log('initializing');
-            form.initialize();
-            console.log('starting');
-            controller.prompts = form.prompts;
-            return form;
+	    this.initializePrompts(form, function() {
+			controller.prompts = form.prompts;
+			console.log('starting');
+			continuation();
+		});
         }
     };
 });
