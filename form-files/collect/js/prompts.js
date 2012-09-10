@@ -1,7 +1,7 @@
 'use strict';
 
-define(['database','opendatakit','controller','backbone','handlebars','promptTypes','builder','zepto','underscore','text','templates/compiledTemplates', 'collect'],
-function(database, opendatakit, controller, Backbone, Handlebars, promptTypes, builder, $, _, collect) {
+define(['mdl','database','opendatakit','controller','backbone','handlebars','promptTypes','builder','zepto','underscore','text','templates/compiledTemplates'],
+function(mdl, database, opendatakit, controller, Backbone, Handlebars, promptTypes, builder, $, _) {
 
 Handlebars.registerHelper('localize', function(textOrLangMap) {
     if(_.isUndefined(textOrLangMap)) {
@@ -10,7 +10,7 @@ Handlebars.registerHelper('localize', function(textOrLangMap) {
     if(_.isString(textOrLangMap)) {
         return new Handlebars.SafeString(textOrLangMap);
     }
-    var locale = opendatakit.getFormLocale();
+    var locale = mdl.qp.formLocale.value;
     if( locale in textOrLangMap ){
         return new Handlebars.SafeString(textOrLangMap[locale]);
     } else if( 'default' in textOrLangMap ){
@@ -44,7 +44,7 @@ promptTypes.base = Backbone.View.extend({
         }
     },
     isInitializeComplete: function() {
-        return (this.template !== null);
+        return (this.template != null);
     },
     initializeRenderContext: function() {
         //We don't want to modify the top level render context.
@@ -73,15 +73,12 @@ promptTypes.base = Backbone.View.extend({
                     function replaceCallback(match) {
                         var variableName = match.slice(2, - 2);
                         variablesRefrenced.push(variableName);
-                        return variableName;
+                        return "database.getDataValue('" + variableName + "')";
                     }
                 content = content.replace(variableRegex, replaceCallback);
 
                 var result = 'if(' + content + '){that.baseValidate(context);} else {context.failure()}';
                 result = 'console.log("test");' + result;
-                $.each(variablesRefrenced, function(idx, variable) {
-                    result = 'controller.getPromptByName("' + variable + '").getValue(function(' + variable + '){' + result + '});';
-                });
 
                 //How best to refrence current value?
                 result = '(function(context){var that = this; ' + result + '})';
@@ -159,21 +156,19 @@ promptTypes.base = Backbone.View.extend({
             callback(context.newValue);
         }
         else {
-            this.getValue(function(value) {
-                callback(value);
-            });
+            callback(that.getValue());
         }
     },
     validate: function(isMoveBackward, context) {
         this.baseValidate(isMoveBackward, context);
     },
-    setValue: function(value, onSuccessfulSave) {
-        var that = this;
-        // TODO: should this validate? Or is validation called before setValue?
-        database.putData(that.name, that.datatype, value, onSuccessfulSave);
+    getValue: function() {
+        return database.getDataValue(this.name);
     },
-    getValue: function(callback) {
-        database.getData(this.name, callback);
+    setValue: function(value, onSuccessfulSave) {
+        // NOTE: data IS NOT updated synchronously. Use callback!
+        var that = this;
+        database.setData(that.name, that.datatype, value, onSuccessfulSave);
     },
     beforeMove: function(continuation) {
         continuation();
@@ -224,10 +219,12 @@ promptTypes.opening = promptTypes.base.extend({
         controller.gotoPromptName('_instances', [], true);
     },
     renderContext: {
-        formName: opendatakit.getFormName(),
-        headerImg: collect.baseDir + 'img/form_logo.png',
-        backupImg: collect.baseDir + 'img/backup.png',
-        advanceImg: collect.baseDir + 'img/advance.png'
+        baseDir: collect.baseDir,
+        formName: mdl.qp.formName.value,
+        instanceName: mdl.qp.instanceName.value,
+        headerImg: 'img/form_logo.png',
+        backupImg: 'img/backup.png',
+        advanceImg: 'img/advance.png'
     }
 });
 promptTypes.json = promptTypes.base.extend({
@@ -257,8 +254,10 @@ promptTypes.finalize = promptTypes.base.extend({
         "click .final-btn": "saveFinal"
     },
     renderContext: {
-        formName: opendatakit.getFormName(),
-        headerImg: collect.baseDir + 'img/form_logo.png'
+        baseDir: collect.baseDir,
+        formName: mdl.qp.formName.value,
+        instanceName: mdl.qp.instanceName.value,
+        headerImg: 'img/form_logo.png',
     },
     onActivate: function(readyToRenderCallback) {
         var that = this;
@@ -310,7 +309,7 @@ promptTypes.instances = promptTypes.base.extend({
     },
     deleteInstance: function(evt){
         var that = this;
-        database.delete_all(opendatakit.getFormId(), $(evt.target).attr('id'), function() {
+        database.delete_all(mdl.qp.formId.value, $(evt.target).attr('id'), function() {
             that.onActivate(function(){that.render();});
         });
     }
@@ -367,60 +366,59 @@ promptTypes.repeat = promptTypes.base.extend({
 });
 promptTypes.select = promptTypes.base.extend({
     type: "select",
-	datatype: "text",
+    datatype: "text",
     template: Handlebars.templates.select,
     templatePath: "templates/select.handlebars",
     events: {
         "change input": "modification"
     },
-	// TODO: choices should be cloned and allow calculations in the choices
-	// perhaps a null 'name' would drop the value from the list of choices...
-	// could also allow calculations in the 'checked' and 'value' fields.
+    // TODO: choices should be cloned and allow calculations in the choices
+    // perhaps a null 'name' would drop the value from the list of choices...
+    // could also allow calculations in the 'checked' and 'value' fields.
     modification: function(evt) {
-		var that = this;
+        var that = this;
         console.log("select modification");
         console.log(this.$('form').serializeArray());
         var value = this.$('form').serializeArray();
-		var saveValue = (value === null) ? null : JSON.stringify(value);
-		// TODO: broken for multiselect -- pretty sure we don't want to serialize array to db	
-		this.setValue(saveValue, function() {
-			that.renderContext.value = value;
-			that.renderContext.choices = _.map(that.renderContext.choices, function(choice) {
-				if ( value !== null ) {
+        var saveValue = (value == null) ? null : JSON.stringify(value);
+        // TODO: broken for multiselect -- pretty sure we don't want to serialize array to db    
+        this.setValue(saveValue, function() {
+            that.renderContext.value = value;
+            that.renderContext.choices = _.map(that.renderContext.choices, function(choice) {
+                if ( value != null ) {
                     // NOTE: for multi-select
-					var matchingValue = _.find(that.renderContext.value, function(value){
-						return choice.name === value.name;
-					});
-					choice.checked = (matchingValue !== null);
-				} else {
-					choice.checked = false;
-				}
-				return choice;
-			});
-			that.render();
-		});
+                    var matchingValue = _.find(that.renderContext.value, function(value){
+                        return choice.name === value.name;
+                    });
+                    choice.checked = (matchingValue != null);
+                } else {
+                    choice.checked = false;
+                }
+                return choice;
+            })
+            that.render();
+        });
     },
     onActivate: function(readyToRenderCallback) {
-		var that = this;
+        var that = this;
         if(this.param in this.form.choices){
             that.renderContext.choices = this.form.choices[this.param];
         }
-		this.getValue(function(saveValue) {
-			that.renderContext.value = (saveValue === null) ? null : JSON.parse(saveValue);
-			for (var i = 0 ; i < that.renderContext.choices.length ; ++i ) {
-				var choice = that.renderContext.choices[i];
-				if ( that.renderContext.value !== null ) {
-				    // NOTE: for multi-select
-					var matchingValue = _.find(that.renderContext.value, function(value){
-						return choice.name === value.name;
-					});
-					that.renderContext.choices[i].checked = (matchingValue !== null);
-				} else {
-					that.renderContext.choices[i].checked = false;
-				}
-			}
-			readyToRenderCallback();
-		});
+        var saveValue = that.getValue();
+        that.renderContext.value = (saveValue == null) ? null : JSON.parse(saveValue);
+        for (var i = 0 ; i < that.renderContext.choices.length ; ++i ) {
+            var choice = that.renderContext.choices[i];
+            if ( that.renderContext.value != null ) {
+                // NOTE: for multi-select
+                var matchingValue = _.find(that.renderContext.value, function(value){
+                    return choice.name === value.name;
+                });
+                that.renderContext.choices[i].checked = (matchingValue != null);
+            } else {
+                that.renderContext.choices[i].checked = false;
+            }
+        }
+        readyToRenderCallback();
     }
 });
 promptTypes.dropdownSelect = promptTypes.base.extend({
@@ -432,37 +430,36 @@ promptTypes.dropdownSelect = promptTypes.base.extend({
     },
     modification: function(evt) {
         console.log("select modification");
-		var that = this;
-		database.putData(this.name, "string", that.$('select').val(), function() {
-			that.render();
-		});
+        var that = this;
+        database.putData(this.name, "string", that.$('select').val(), function() {
+            that.render();
+        });
     },
     render: function() {
-		this.getValue(function(value) {
-			console.log(value);
-			var context = {
-				name: this.name,
-				label: this.label,
-				choices: _.map(this.choices, function(choice) {
-					if (_.isString(choice)) {
-						choice = {
-							label: choice,
-							value: choice
-						};
-					}
-					else {
-						if (!('label' in choice)) {
-							choice.label = choice.name;
-						}
-					}
-					choice.value = choice.name;
-					return $.extend({
-						selected: (choice.value === value)
-					}, choice);
-				})
-			};
-			this.$el.html(this.template(context));
-		});
+        var value = this.getValue();
+        console.log(value);
+        var context = {
+            name: this.name,
+            label: this.label,
+            choices: _.map(this.choices, function(choice) {
+                if (_.isString(choice)) {
+                    choice = {
+                        label: choice,
+                        value: choice
+                    };
+                }
+                else {
+                    if (!('label' in choice)) {
+                        choice.label = choice.name;
+                    }
+                }
+                choice.value = choice.name;
+                return $.extend({
+                    selected: (choice.value === value)
+                }, choice);
+            })
+        };
+        this.$el.html(this.template(context));
     }
 });
 promptTypes.inputType = promptTypes.text = promptTypes.base.extend({
@@ -494,10 +491,9 @@ promptTypes.inputType = promptTypes.text = promptTypes.base.extend({
     },
     onActivate: function(readyToRenderCallback) {
         var renderContext = this.renderContext;
-        this.getValue(function(value) {
-            renderContext.value = value;
-            readyToRenderCallback();
-        });
+        var value = this.getValue();
+        renderContext.value = value;
+        readyToRenderCallback();
     },
     beforeMove: function(continuation) {
         var that = this;
@@ -568,10 +564,9 @@ promptTypes.image = promptTypes.media.extend({
     templatePath: "templates/image.handlebars",
     onActivate: function(readyToRenderCallback) {
         var that = this;
-        this.getValue(function(value) {
-            that.renderContext.mediaPath = value;
-            that.renderContext.uriValue = opendatakit.asUri(value, 'img');
-        });
+        var value = that.getValue();
+        that.renderContext.mediaPath = value;
+        that.renderContext.uriValue = opendatakit.asUri(value, 'img');
         readyToRenderCallback();
     },
     capture: function() {
@@ -597,13 +592,12 @@ promptTypes.video = promptTypes.media.extend({
     templatePath: "templates/video.handlebars",
     onActivate: function(readyToRenderCallback) {
         var that = this;
-        this.getValue(function(value) {
-            if (value !== null && value.length !== 0) {
-                that.renderContext.uriValue = opendatakit.asUri(value, 'video', 'src');
-                that.renderContext.videoPoster = opendatakit.asUri(opendatakit.baseDir + "img/play.png", 'video', 'poster');
-            }
-            readyToRenderCallback();
-        });
+        var value = that.getValue();
+        if (value != null && value.length != 0) {
+            that.renderContext.uriValue = opendatakit.asUri(value, 'video', 'src');
+            that.renderContext.videoPoster = opendatakit.asUri(opendatakit.baseDir + "img/play.png", 'video', 'poster');
+        }
+        readyToRenderCallback();
     },
     capture: function() {
         if (collect.getPlatformInfo !== 'Android') {
@@ -661,6 +655,25 @@ promptTypes.screen = promptTypes.base.extend({
         }
         return true;
     },
+    onActivateHelper: function(idx, readyToRenderCallback) {
+        var that = this;
+        return function() {
+            if ( that.prompts.length > idx ) {
+                var prompt = that.prompts[idx];
+                prompt.onActivate(that.onActivateHelper(idx+1,readyToRenderCallback));
+            } else {
+                readyToRenderCallback();
+            }
+        }
+    },
+    onActivate: function(readyToRenderCallback) {
+        if ( this.prompts.length == 0 ) {
+            readyToRenderCallback();
+        } else {
+            var prompt = this.prompts[0];
+            prompt.onActivate(this.onActivateHelper(1, readyToRenderCallback));
+        }
+    },
     render: function(){
         this.$el.html('<div class="prompts"></div>');
         var $prompts = this.$('.prompts');
@@ -669,7 +682,6 @@ promptTypes.screen = promptTypes.base.extend({
             $prompts.append($promptEl);
             prompt.setElement($promptEl.get(0));
             prompt.render();
-        
         });
     }
 });
@@ -697,29 +709,12 @@ promptTypes.label = promptTypes.base.extend({
 });
 promptTypes.goto = promptTypes.base.extend({
     type: "goto",
-    hideInHierarchy: true,
+        hideInHierarchy: true,
     isInitializeComplete: function() {
         return true;
     },
     onActivate: function(readyToRenderCallback) {
         controller.gotoLabel(this.param);
-    }
-});
-promptTypes.conditional_goto = promptTypes.base.extend({
-    type: "goto_if",
-    condition: function(){
-        return false;
-    },
-    hideInHierarchy: true,
-    isInitializeComplete: function() {
-        return true;
-    },
-    onActivate: function(readyToRenderCallback) {
-        if(this.condition()){
-            controller.gotoLabel(this.param);
-        } else {
-            controller.gotoNextScreen();
-        }
     }
 });
 });
