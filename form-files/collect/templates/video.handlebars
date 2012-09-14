@@ -1,0 +1,13 @@
+<ul class="odk">
+    {{> labelHint}}
+    <li>
+        <input class="odk" type="text" name="{{name}}" value="{{mediaPath}}" disabled="true" />
+    </li>
+    <li><button class="whiteButton">Take Video</button></li>
+    <li><div class="mediaContainer">
+        {{#if uriValue}}
+            <video src="{{uriValue}}" controls="controls">
+            </video>
+        {{/if}}
+    </div></li>
+</ul>

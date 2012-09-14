@@ -1,0 +1,21 @@
+<div>
+    <center>
+        <img src="{{ headerImg }}" width="50%"/>
+        <p>You are at the start of "{{formName}}". Swipe the screen as shown below to begin.</p>
+        <div>
+            <span style="float:left;">
+                <img src="{{ backupImg }}"/>
+                <p>previous prompt</p>
+            </span>
+            <span style="float:right;">
+                <img src="{{ advanceImg }}"/>
+                <p>next prompt</p>
+            </span>
+        </div>
+        <div style="clear:both;">
+            <label for="instanceName">Enter instance name:</label>
+            <input class="odk" name="instanceName" value="{{instanceName}}"></input>
+        </div>
+        <button class="odk-big-btn editInstances">Edit Saved Instances</button>
+    </center>
+</div>

@@ -1,0 +1,17 @@
+<ul class="odk {{#if hide}}odk-hidden{{/if}}">
+    {{> labelHint}}
+    <li><input
+        class="odk"
+        type="text" 
+        name="{{name}}"
+        value="{{value}}"
+        {{#if disabled}}
+            style="background-color:lightgray;"
+            disabled="true"
+        {{/if}}
+        />
+        {{#if invalid}}
+            <p>invalid</p>
+        {{/if}}
+    </li>
+</ul>

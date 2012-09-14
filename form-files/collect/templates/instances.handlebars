@@ -1,0 +1,17 @@
+<ul class="odk">
+    {{#each instances}}
+        <li class="inline separated">
+            <ul class="odk">
+                <li><b>Instance Name:</b> {{instanceName}}</li>
+                <li><b>Last Save Date:</b> {{last_saved_timestamp}}</li>
+                <li><b>Finalized:</b> {{saved_status}}</li>
+            </ul>
+            <div class="odk btn-group">
+                <button id="{{instance_id}}" class="odk openInstance">edit</button>
+                <button id="{{instance_id}}" class="odk deleteInstance">delete</button>
+            </div>
+        </li>
+    {{else}}
+        <li>Unexpected absence of records.</li>
+    {{/each}}
+</ul>
