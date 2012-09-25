@@ -882,12 +882,13 @@ promptTypes.acknowledge = promptTypes.select.extend({
     },
     onActivate: function(readyToRenderCallback) {
         var that = this;
-         var acknowledged;
+        var acknowledged;
         try{
             acknowledged = JSON.parse(that.getValue());
         } catch(e) {
             acknowledged = false;
         }
+        
         that.renderContext.choices = [{
             "name": "acknowledge",
             "label": "acknowledge",
