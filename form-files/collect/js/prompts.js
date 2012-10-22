@@ -421,7 +421,6 @@ promptTypes.select = promptTypes.select_multiple = promptTypes.base.extend({
     choiceFilter: function(){ return true; },
     updateRenderValue: function(formValue) {
         var that = this;
-        console.error(formValue);
         //that.renderContext.value = formValue;
         var filteredChoices = _.filter(that.renderContext.choices, function(choice){
             return that.choiceFilter(choice);
@@ -531,7 +530,7 @@ promptTypes.inputType = promptTypes.text = promptTypes.base.extend({
         //Useful for sliders.
         //It might be better to listen for the jQm event for when a slider is released.
         //This could cause problems since the debounced function could fire after a page change.
-		var ctxt = controller.newContext(evt);
+        var ctxt = controller.newContext(evt);
         ctxt.append("prompts." + that.type + ".modification", "px: " + that.promptIdx);
         var renderContext = that.renderContext;
         var value = that.$('input').val();
@@ -585,10 +584,10 @@ promptTypes.number = promptTypes.inputType.extend({
     }
 });
 promptTypes.datetime = promptTypes.inputType.extend({
-    type: "date",
+    type: "datetime",
     datatype: "string",
     baseHtmlAttributes: {
-        'type':'date'
+        'type':'datetime'
     },
     scrollerAttributes: {
         preset: 'datetime',
@@ -634,7 +633,7 @@ promptTypes.datetime = promptTypes.inputType.extend({
     }
 });
 promptTypes.date = promptTypes.datetime.extend({
-    type: "time",
+    type: "date",
     baseHtmlAttributes: {
         'type':'date'
     },
@@ -644,7 +643,7 @@ promptTypes.date = promptTypes.datetime.extend({
     }
 });
 promptTypes.time = promptTypes.datetime.extend({
-    type: "string",
+    type: "time",
     baseHtmlAttributes: {
         'type':'time'
     },
