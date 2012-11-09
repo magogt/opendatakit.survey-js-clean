@@ -1,0 +1,13 @@
+<div>
+    {{> labelHint}}
+    <input type="text" name="{{name}}" value="{{value}}"
+        class="ui-disabled"
+    />
+    <button class="launch">{{buttonLabel}}</button>
+    <div class="mediaContainer">
+        {{#if uriValue}}
+            <video src="{{uriValue}}" controls="controls">
+            </video>
+        {{/if}}
+    </div>
+<div>
