@@ -23,7 +23,7 @@ define(['mdl','opendatakit','jquery'], function(mdl,opendatakit,$) {
     var that = this;
     try {
         if ( that.submissionDb ) {
-            that.submissionDb.transaction(transactionBody, function(error) {
+            that.submissionDb.transaction(transactionBody, function(error,a) {
                     ctxt.append("withDb.transaction.error", error.message);
                     ctxt.append("withDb.transaction.error.transactionBody", transactionBody.toString());
                     inContinuation = true;
