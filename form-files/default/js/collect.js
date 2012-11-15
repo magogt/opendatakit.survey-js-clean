@@ -1,3 +1,7 @@
+/*
+This collect object is just a facade for browser testing.
+It will be replaced by one provided by Android.
+*/
 window.collect = window.collect || {
     instanceId: null,
     getBaseUrl: function() {
@@ -40,6 +44,20 @@ window.collect = window.collect || {
                 controller.opendatakitCallback( page, path, action, 
                     '{ "status": -1, "result": { "mediaPath": "file:///C:\\\\Users\\\\Administrator\\\\Pictures\\\\new_bubble.3gpp" } }' );
             }, 100);
+            return "OK";
+        }
+        if ( action == 'org.opendatakit.sensors.PULSEOX' ) {
+            setTimeout(function() {
+                controller.opendatakitCallback( page, path, action, 
+                    '{ "status": -1, "result": { "pulse": 100, "ox": 1.5 } }' );
+            }, 1000);
+            return "OK";
+        }
+        if ( action == 'change.uw.android.BREATHCOUNT' ) {
+            setTimeout(function() {
+                controller.opendatakitCallback( page, path, action, 
+                    '{ "status": -1, "result": { "pulse": 100, "ox": 1.5 } }' );
+            }, 1000);
             return "OK";
         }
     },
