@@ -1,0 +1,512 @@
+{
+    "model": {
+        "picture": {
+            "isPersisted": true, 
+            "elementType": "mimeUri", 
+            "type": "object", 
+            "properties": {
+                "contentType": {
+                    "default": "image/*", 
+                    "type": "string"
+                }, 
+                "uri": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "visited_seattle": {
+            "type": "string"
+        }, 
+        "name": {
+            "type": "string"
+        }, 
+        "rating": {
+            "type": "integer"
+        }, 
+        "specialTemplateTest": {
+            "type": "string"
+        }, 
+        "barcode": {
+            "type": "string"
+        }, 
+        "image_test": {
+            "isPersisted": true, 
+            "elementType": "mimeUri", 
+            "type": "object", 
+            "properties": {
+                "contentType": {
+                    "default": "image/*", 
+                    "type": "string"
+                }, 
+                "uri": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "datetime": {
+            "elementType": "dateTime", 
+            "type": "object"
+        }, 
+        "recording": {
+            "isPersisted": true, 
+            "elementType": "mimeUri", 
+            "type": "object", 
+            "properties": {
+                "contentType": {
+                    "default": "audio/*", 
+                    "type": "string"
+                }, 
+                "uri": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "born": {
+            "elementType": "date", 
+            "type": "object"
+        }, 
+        "audio_test": {
+            "isPersisted": true, 
+            "elementType": "mimeUri", 
+            "type": "object", 
+            "properties": {
+                "contentType": {
+                    "default": "audio/*", 
+                    "type": "string"
+                }, 
+                "uri": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "examples": {
+            "isPersisted": true, 
+            "items": {
+                "type": "string"
+            }, 
+            "type": "array"
+        }, 
+        "error": {
+            "type": "string"
+        }, 
+        "x": {
+            "type": "string"
+        }, 
+        "video_test": {
+            "isPersisted": true, 
+            "elementType": "mimeUri", 
+            "type": "object", 
+            "properties": {
+                "contentType": {
+                    "default": "video/*", 
+                    "type": "string"
+                }, 
+                "uri": {
+                    "type": "string"
+                }
+            }
+        }, 
+        "visited_continents": {
+            "isPersisted": true, 
+            "items": {
+                "type": "string"
+            }, 
+            "type": "array"
+        }, 
+        "time": {
+            "elementType": "time", 
+            "type": "object"
+        }, 
+        "location": {
+            "elementType": "geopoint", 
+            "type": "object", 
+            "name": "geopoint", 
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                }, 
+                "altitude": {
+                    "type": "number"
+                }, 
+                "longitude": {
+                    "type": "number"
+                }, 
+                "accuracy": {
+                    "type": "number"
+                }
+            }
+        }
+    }, 
+    "settings": [
+        {
+            "setting": "formId", 
+            "_rowNum": 2, 
+            "value": "exampleForm"
+        }, 
+        {
+            "setting": "formVersion", 
+            "_rowNum": 3, 
+            "value": 1
+        }, 
+        {
+            "setting": "formTitle", 
+            "_rowNum": 4, 
+            "value": "Example Form"
+        }
+    ], 
+    "survey": [
+        {
+            "name": "examples", 
+            "_rowNum": 2, 
+            "type": "select_multiple", 
+            "param": "examples", 
+            "label": "Which examples would you like to see?"
+        }, 
+        {
+            "_rowNum": 3, 
+            "type": "goto", 
+            "param": "error_end", 
+            "condition": "not(selected(data('examples'), 'error'))"
+        }, 
+        {
+            "name": "error", 
+            "hint": "Error prompts are useful for finding bugs in forms with lots of branching.", 
+            "_rowNum": 4, 
+            "type": "select_one", 
+            "param": "yesno", 
+            "label": "Trigger an error on the next screen?"
+        }, 
+        {
+            "_rowNum": 5, 
+            "type": "error", 
+            "param": null, 
+            "condition": "selected(data('error'), 'yes')"
+        }, 
+        {
+            "type": "label", 
+            "_rowNum": 6, 
+            "param": "error_end"
+        }, 
+        {
+            "_rowNum": 7, 
+            "type": "goto", 
+            "param": "intents_end", 
+            "condition": "not(selected(data('examples'), 'intents'))"
+        }, 
+        {
+            "name": "barcode", 
+            "_rowNum": 8, 
+            "type": "barcode", 
+            "param": null, 
+            "label": "Scan a barcode"
+        }, 
+        {
+            "name": "picture", 
+            "_rowNum": 9, 
+            "type": "image", 
+            "param": null, 
+            "label": "Take a picture"
+        }, 
+        {
+            "name": "recording", 
+            "_rowNum": 10, 
+            "type": "audio", 
+            "param": null, 
+            "label": "Make a recording"
+        }, 
+        {
+            "type": "label", 
+            "_rowNum": 11, 
+            "param": "intents_end"
+        }, 
+        {
+            "_rowNum": 12, 
+            "type": "goto", 
+            "param": "dynamic_label_end", 
+            "condition": "not(selected(data('examples'), 'dynamic_label'))"
+        }, 
+        {
+            "name": "name", 
+            "hint": "Please use your full name", 
+            "_rowNum": 13, 
+            "type": "text", 
+            "param": null, 
+            "label": "Enter your name"
+        }, 
+        {
+            "_rowNum": 14, 
+            "type": "note", 
+            "param": null, 
+            "label": "Hello {{name}}"
+        }, 
+        {
+            "type": "label", 
+            "_rowNum": 15, 
+            "param": "dynamic_label_end"
+        }, 
+        {
+            "_rowNum": 16, 
+            "type": "goto", 
+            "param": "datetime_end", 
+            "condition": "not(selected(data('examples'), 'datetime'))"
+        }, 
+        {
+            "name": "born", 
+            "_rowNum": 17, 
+            "type": "date", 
+            "param": null, 
+            "label": "When were you born?"
+        }, 
+        {
+            "param": null, 
+            "_rowNum": 18, 
+            "type": "note", 
+            "condition": "data('born').getDay() === now().getDay() && data('born').getMonth() === now().getMonth()", 
+            "label": "Happy Birthday!"
+        }, 
+        {
+            "name": "time", 
+            "_rowNum": 19, 
+            "type": "time", 
+            "param": null, 
+            "label": "What time is it?"
+        }, 
+        {
+            "name": "datetime", 
+            "_rowNum": 20, 
+            "type": "datetime", 
+            "param": null, 
+            "label": "When will you be available for a follow up survey?"
+        }, 
+        {
+            "type": "label", 
+            "_rowNum": 21, 
+            "param": "datetime_end"
+        }, 
+        {
+            "name": "location", 
+            "type": "geopoint", 
+            "param": null, 
+            "_rowNum": 22, 
+            "condition": "selected(data('examples'), 'geopoint')", 
+            "label": "Record your location:"
+        }, 
+        {
+            "_rowNum": 23, 
+            "prompts": [
+                {
+                    "name": "visited_continents", 
+                    "_rowNum": 24, 
+                    "type": "select_multiple", 
+                    "param": "continents", 
+                    "label": "Which continents have you visited?"
+                }, 
+                {
+                    "name": "visited_seattle", 
+                    "type": "select_one", 
+                    "param": "yesno", 
+                    "_rowNum": 25, 
+                    "condition": "calculates.ask_about_seattle()", 
+                    "label": "Have you visited Seattle?"
+                }
+            ], 
+            "type": "screen", 
+            "condition": "selected(data('examples'), 'screen_group')"
+        }, 
+        {
+            "_rowNum": 27, 
+            "type": "goto", 
+            "param": "media_end", 
+            "condition": "not(selected(data('examples'), 'media'))"
+        }, 
+        {
+            "type": "screen", 
+            "prompts": [
+                {
+                    "name": "audio_test", 
+                    "_rowNum": 29, 
+                    "type": "audio", 
+                    "param": null, 
+                    "label": "Make a recording:"
+                }, 
+                {
+                    "name": "video_test", 
+                    "_rowNum": 30, 
+                    "type": "video", 
+                    "param": null, 
+                    "label": "Take a video:"
+                }, 
+                {
+                    "name": "image_test", 
+                    "_rowNum": 31, 
+                    "type": "image", 
+                    "param": null, 
+                    "label": "Take a picture:"
+                }
+            ], 
+            "_rowNum": 28
+        }, 
+        {
+            "type": "note", 
+            "image": "img/dolphin.png", 
+            "audio": "audio/carrioncrow.mp3", 
+            "_rowNum": 33, 
+            "param": null, 
+            "label": "This prompt shows how to embed media in labels."
+        }, 
+        {
+            "type": "label", 
+            "_rowNum": 34, 
+            "param": "media_end"
+        }, 
+        {
+            "name": "x", 
+            "_rowNum": 35, 
+            "type": "with_next", 
+            "assign": 10, 
+            "param": null
+        }, 
+        {
+            "param": null, 
+            "_rowNum": 36, 
+            "type": "note", 
+            "condition": "selected(data('examples'), 'assignment')", 
+            "label": "Assigning a value of 10 to x."
+        }, 
+        {
+            "param": null, 
+            "_rowNum": 37, 
+            "type": "note", 
+            "condition": "data('x') === 10", 
+            "label": "x = {{x}}"
+        }, 
+        {
+            "name": "specialTemplateTest", 
+            "_rowNum": 38, 
+            "param": null, 
+            "label": "This is a custom template that uses D3.js:", 
+            "type": "text", 
+            "condition": "selected(data('examples'), 'custom_template')", 
+            "templatePath": "test.handlebars"
+        }, 
+        {
+            "name": "rating", 
+            "hint": "1 is very bad. 10 is very good.", 
+            "inputAttributes": {
+                "max": 10, 
+                "type": "range", 
+                "min": 1
+            }, 
+            "_rowNum": 39, 
+            "param": null, 
+            "label": "How would you rate this survey?", 
+            "default": 5, 
+            "type": "integer"
+        }
+    ], 
+    "calculates": [
+        {
+            "calculation": "selected(data('visited_continents'), 'NorthAmerica')", 
+            "_rowNum": 2, 
+            "name": "ask_about_seattle"
+        }
+    ], 
+    "choices": {
+        "examples": [
+            {
+                "_rowNum": 11, 
+                "name": "error", 
+                "label": "error"
+            }, 
+            {
+                "_rowNum": 12, 
+                "name": "intents", 
+                "label": "intents"
+            }, 
+            {
+                "_rowNum": 13, 
+                "name": "dynamic_label", 
+                "label": "dynamic label"
+            }, 
+            {
+                "_rowNum": 14, 
+                "name": "datetime", 
+                "label": "datetime"
+            }, 
+            {
+                "_rowNum": 15, 
+                "name": "geopoint", 
+                "label": "geopoint"
+            }, 
+            {
+                "_rowNum": 16, 
+                "name": "media", 
+                "label": "media"
+            }, 
+            {
+                "_rowNum": 17, 
+                "name": "screen_group", 
+                "label": "screen group with select and calculate"
+            }, 
+            {
+                "_rowNum": 18, 
+                "name": "custom_template", 
+                "label": "custom template"
+            }, 
+            {
+                "_rowNum": 19, 
+                "name": "assignment", 
+                "label": "assignment"
+            }
+        ], 
+        "yesno": [
+            {
+                "_rowNum": 2, 
+                "name": "yes", 
+                "label": "yes"
+            }, 
+            {
+                "_rowNum": 3, 
+                "name": "no", 
+                "label": "no"
+            }
+        ], 
+        "continents": [
+            {
+                "_rowNum": 4, 
+                "name": "NorthAmerica", 
+                "label": "North America"
+            }, 
+            {
+                "_rowNum": 5, 
+                "name": "SouthAmerica", 
+                "label": "South America"
+            }, 
+            {
+                "_rowNum": 6, 
+                "name": "Europe", 
+                "label": "Europe"
+            }, 
+            {
+                "_rowNum": 7, 
+                "name": "Africa", 
+                "label": "Africa"
+            }, 
+            {
+                "_rowNum": 8, 
+                "name": "Asia", 
+                "label": "Asia"
+            }, 
+            {
+                "_rowNum": 9, 
+                "name": "Australia", 
+                "label": "Australia"
+            }, 
+            {
+                "_rowNum": 10, 
+                "name": "Antarctica", 
+                "label": "Antarctica"
+            }
+        ]
+    }
+}
