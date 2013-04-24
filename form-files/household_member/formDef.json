@@ -1,0 +1,109 @@
+{
+  "survey": [
+    {
+      "type": "integer",
+      "name": "age",
+      "label": "Enter age:",
+      "_rowNum": 2
+    },
+    {
+      "type": "select_one",
+      "name": "sex",
+      "label": "Enter sex:",
+      "_rowNum": 3,
+      "param": "sexes"
+    },
+    {
+      "type": "select_one",
+      "name": "income_contribution",
+      "label": "Does this household member contribute to the household income?",
+      "_rowNum": 4,
+      "param": "yesno"
+    },
+    {
+      "type": "text",
+      "name": "children",
+      "label": "Which household members are children of this household member?",
+      "_rowNum": 5
+    },
+    {
+      "type": "text",
+      "name": "siblings",
+      "label": "Which household members are siblings of this household member?",
+      "_rowNum": 6
+    },
+    {
+      "type": "text",
+      "name": "cousins",
+      "label": "Which household members are cousins of this household member?",
+      "_rowNum": 7
+    }
+  ],
+  "choices": {
+    "yesno": [
+      {
+        "list_name": "yesno",
+        "name": "yes",
+        "label": "yes",
+        "_rowNum": 2
+      },
+      {
+        "list_name": "yesno",
+        "name": "no",
+        "label": "no",
+        "_rowNum": 3
+      }
+    ],
+    "sexes": [
+      {
+        "list_name": "sexes",
+        "name": "male",
+        "label": "male",
+        "_rowNum": 5
+      },
+      {
+        "list_name": "sexes",
+        "name": "female",
+        "label": "female",
+        "_rowNum": 6
+      }
+    ]
+  },
+  "settings": [
+    {
+      "setting": "form_id",
+      "value": "household_member",
+      "_rowNum": 2
+    },
+    {
+      "setting": "form_version",
+      "value": 20130408,
+      "_rowNum": 3
+    },
+    {
+      "setting": "form_title",
+      "value": "Household Member Survey",
+      "_rowNum": 4
+    }
+  ],
+  "model": {
+    "age": {
+      "type": "integer"
+    },
+    "sex": {
+      "type": "string"
+    },
+    "income_contribution": {
+      "type": "string"
+    },
+    "children": {
+      "type": "string"
+    },
+    "siblings": {
+      "type": "string"
+    },
+    "cousins": {
+      "type": "string"
+    }
+  }
+}
