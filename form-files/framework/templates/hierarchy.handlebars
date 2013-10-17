@@ -1,0 +1,21 @@
+<p>Hierarchy View</p>
+<ul data-role="listview"><!-- this is completely wrong - should not use promptLink - should have screenPath of prompt and goto that path. -->
+    {{#each prompts}}
+        {{#unless hideInHierarchy}}
+            {{#if prompts}}
+            <li>
+                <h3><a href="{{promptLink promptIdx}}">Group</a></h3>
+            </li>
+            {{else}}
+                {{#if name}}
+                <li>
+                    <h3><a href="{{promptLink promptIdx}}">{{name}}</a>: {{getValue}}</h3>
+                    <p>{{localize display.text}}</p>
+                </li>
+                {{/if}}
+            {{/if}}
+        {{/unless}}
+    {{else}}
+        <li><span>No prompts</span></li>
+    {{/each}}
+</ul>
