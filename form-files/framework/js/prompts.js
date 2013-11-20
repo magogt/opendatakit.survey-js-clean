@@ -1689,7 +1689,9 @@ promptTypes.media = promptTypes.base.extend({
         var platInfo = opendatakit.getPlatformInfo();
         // TODO: is this the right sequence?
         var outcome = shim.doAction( opendatakit.getRefId(), that.getPromptPath(), 
-            'capture', that.captureAction, JSON.stringify({ extras: { newFile: "opendatakit-macro(newFile)" }}));
+            'capture', that.captureAction, JSON.stringify({ extras: { 
+				appName: opendatakit.getPlatformInfo().appName, 
+				uriFragmentNewFileBase: "opendatakit-macro(uriFragmentNewInstanceFile)" }}));
         ctxt.log('D','media.capture', platInfo.container + " outcome is " + outcome);
         if (outcome === null || outcome !== "OK") {
             ctxt.log("W",'media.capture',platInfo.container + " Should be OK got >" + outcome + "<");
@@ -1706,7 +1708,9 @@ promptTypes.media = promptTypes.base.extend({
         var platInfo = opendatakit.getPlatformInfo();
         // TODO: is this the right sequence?
         var outcome = shim.doAction( opendatakit.getRefId(), that.getPromptPath(), 
-            'choose', that.chooseAction,  JSON.stringify({ extras: { newFile: "opendatakit-macro(newFile)" }}));
+            'choose', that.chooseAction,  JSON.stringify({ extras: { 
+				appName: opendatakit.getPlatformInfo().appName, 
+				uriFragmentNewFileBase: "opendatakit-macro(uriFragmentNewInstanceFile)" }}));
         ctxt.log('D','media.capture', platInfo.container + " outcome is " + outcome);
         if (outcome === null || outcome !== "OK") {
             ctxt.log("W",'media.capture', platInfo.container + " Should be OK got >" + outcome + "<");
@@ -1728,13 +1732,13 @@ promptTypes.media = promptTypes.base.extend({
             if (jsonObject.status === -1 /* Activity.RESULT_OK */ ) {
                 ctxt.log('D',"prompts." + that.type + 'getCallback.actionFn.resultOK', "px: " + that.promptIdx +
                     " promptPath: " + promptPath + " internalPromptContext: " + internalPromptContext + " action: " + action);
-                var uri = (jsonObject.result != null) ? jsonObject.result.uri : null;
+                var uriFragment = (jsonObject.result != null) ? jsonObject.result.uriFragment : null;
                 var contentType = (jsonObject.result != null) ? jsonObject.result.contentType : null;
-                if (uri != null && contentType != null) {
+                if (uriFragment != null && contentType != null) {
                     var oldPath = that.getValue();
-                    if ( uri != oldPath) {
+                    if ( uriFragment != oldPath) {
                         // TODO: delete old??? Or leave until marked as finalized?
-                        that.setValueDeferredChange({ uri : uri, contentType: contentType });
+                        that.setValueDeferredChange({ uriFragment : uriFragment, contentType: contentType });
                         that.enableButtons();
                         that.updateRenderContext();
                         that.reRender(ctxt);
@@ -1757,7 +1761,8 @@ promptTypes.media = promptTypes.base.extend({
     baseUpdateRenderContext: function() {
         var that = this;
         var mediaUri = that.getValue();
-        var uri = (mediaUri != null && mediaUri.uri != null) ? mediaUri.uri : null;
+        var uriFragment = (mediaUri != null && mediaUri.uriFragment != null) ? mediaUri.uriFragment : null;
+        var uri = (uriFragment == null) ? null : opendatakit.getPlatformInfo().baseUri + uriFragment;
         var contentType = (mediaUri != null && mediaUri.contentType != null) ? mediaUri.contentType : null;
         var safeIdentity = 'T'+opendatakit.genUUID().replace(/[-:]/gi,'');
         var platinfo = opendatakit.getPlatformInfo();
@@ -1767,7 +1772,7 @@ promptTypes.media = promptTypes.base.extend({
             that.renderContext.pre4Android = ( platinfo.version.substring(0,1) < "4" );
         }
         that.renderContext.mediaPath = uri;
-        that.renderContext.uriValue = uri;
+        that.renderContext.uriFragmentValue = uriFragment;
         that.renderContext.safeIdentity = safeIdentity;
         that.renderContext.contentType = contentType;
     },
@@ -1791,10 +1796,6 @@ promptTypes.video = promptTypes.media.extend({
     templatePath: "templates/video.handlebars",
     captureAction: 'org.opendatakit.survey.android.activities.MediaCaptureVideoActivity',
     chooseAction: 'org.opendatakit.survey.android.activities.MediaChooseVideoActivity',
-    updateRenderContext: function() {
-        this.baseUpdateRenderContext();
-        // this.renderContext.videoPoster = this.renderContext.uriValue;
-    }
 });
 promptTypes.audio = promptTypes.media.extend({
     type: "audio",
