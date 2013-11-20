@@ -144,6 +144,7 @@ return Backbone.View.extend({
         // completion.
         screen.buildRenderContext($.extend({render:true},ctxt,{success:function(){
         
+                ctxt.log('D', "screenManager.commonDrawScreen.screen.buildRenderContext.success");
                 // patch up navigation settings for the screen...
                 // if neither forward or backward navigation is enabled, disable all navigations.
                 if ( !screen._renderContext.enableNavigation ) {
@@ -163,8 +164,10 @@ return Backbone.View.extend({
                 that.activeScreen = screen;
 
                 // render screen
+                ctxt.log('D', "screenManager.commonDrawScreen.screen.before.render");
                 screen.render($.extend({},ctxt,{success: function() {
                     
+                    ctxt.log('D', "screenManager.commonDrawScreen.screen.render.success");
                     if ( that.currentPageEl == screen.$el ) {
                         // overwrites the old $el in the DOM at this point...
                         that.currentPageEl.replaceWith(screen.$el);
@@ -177,6 +180,7 @@ return Backbone.View.extend({
                     
                     // this might double-reset the pageChangeActionLockout flag, but it does ensure it is reset
                     that.savedCtxt = $.extend({}, ctxt, {success: function() {
+                            ctxt.log('D', "screenManager.commonDrawScreen.savedCtxt.success (should be from within handlePageChange)");
                             window.clearTimeout(activateTimeout);
                             that.hideSpinnerOverlay();
                             that.pageChangeActionLockout = false;
@@ -192,6 +196,7 @@ return Backbone.View.extend({
                     });
                 }}));
             }, failure: function(m) {
+                ctxt.log('D', "screenManager.screen.buildRenderContext.failure");
                 that.savedCtxt = null;
                 window.clearTimeout(activateTimeout);
                 that.hideSpinnerOverlay();
@@ -210,10 +215,12 @@ return Backbone.View.extend({
         if (that.eventTimeStamp == evt.timeStamp) {
             ctxt.log('I','screenManager.gotoNextScreen.duplicateEvent');
             ctxt.success();
-            return false;
+			evt.preventDefault();
+            return;
         }
         that.eventTimeStamp = evt.timeStamp;
-        return that.gotoNextScreenAction(ctxt);
+		that.gotoNextScreenAction(ctxt);
+		evt.preventDefault();
     },
     gotoNextScreenAction: function(ctxt) {
         this.currentPageEl.css('opacity', '.5').fadeTo("fast", 1.0);
@@ -221,7 +228,7 @@ return Backbone.View.extend({
         if(that.pageChangeActionLockout) {
             ctxt.log('D','screenManager.gotoNextScreen.ignoreDisabled');
             ctxt.success();
-            return false;
+            return;
         }
         that.pageChangeActionLockout = true;
         that.controller.gotoNextScreen($.extend({},ctxt,{success:function(){
@@ -231,7 +238,6 @@ return Backbone.View.extend({
                     that.pageChangeActionLockout = false; 
                     ctxt.failure(m);
                 }}));
-        return false;
     },
     gotoPreviousScreen: function(evt) {
         var that = this;
@@ -243,10 +249,12 @@ return Backbone.View.extend({
         if (that.eventTimeStamp == evt.timeStamp) {
             ctxt.log('I','screenManager.gotoPreviousScreen.duplicateEvent');
             ctxt.success();
-            return false;
+			evt.preventDefault();
+            return;
         }
         that.eventTimeStamp = evt.timeStamp;
-        return that.gotoPreviousScreenAction(ctxt);
+        that.gotoPreviousScreenAction(ctxt);
+		evt.preventDefault();
     },
     gotoPreviousScreenAction: function(ctxt) {
         this.currentPageEl.css('opacity', '.5').fadeTo("fast", 1.0);
@@ -254,7 +262,7 @@ return Backbone.View.extend({
         if(that.pageChangeActionLockout) {
             ctxt.log('D','screenManager.gotoPreviousScreen.ignoreDisabled');
             ctxt.success();
-            return false;
+            return;
         }
         that.pageChangeActionLockout = true;
         that.controller.gotoPreviousScreen($.extend({},ctxt,{success:function(){ 
@@ -264,7 +272,6 @@ return Backbone.View.extend({
                     that.pageChangeActionLockout = false; 
                     ctxt.failure(m);
                 }}));
-        return false;
     },
     showContents: function(evt) {
         var that = this;
@@ -276,7 +283,8 @@ return Backbone.View.extend({
         if (that.eventTimeStamp == evt.timeStamp) {
             ctxt.log('I','screenManager.showContents.duplicateEvent');
             ctxt.success();
-            return false;
+			evt.preventDefault();
+            return;
         }
         that.eventTimeStamp = evt.timeStamp;
         this.currentPageEl.css('opacity', '.5').fadeTo("fast", 1.0);
@@ -284,7 +292,8 @@ return Backbone.View.extend({
         if(that.pageChangeActionLockout) {
             ctxt.log('D','screenManager.showContents.ignoreDisabled');
             ctxt.success();
-            return false;
+			evt.preventDefault();
+            return;
         }
         that.pageChangeActionLockout = true;
         that.controller.gotoContentsScreen($.extend({},ctxt,{success:function(){
@@ -294,7 +303,7 @@ return Backbone.View.extend({
                     that.pageChangeActionLockout = false; 
                     ctxt.failure(m);
                 }}));
-        return false;
+		evt.preventDefault();
     },
     ignoreChanges: function(evt) {
         evt.stopPropagation();
@@ -383,16 +392,15 @@ return Backbone.View.extend({
         that.savedCtxt = null;
         
         if ( ctxt != null ) {
-            ctxt.log('D','screenManager.handlePageChange.linked');
+            ctxt.log('I','screenManager.handlePageChange.linked');
             if ( that.activeScreen ) {
                 // TODO: unclear what proper action should be for a failure
                 // during afterRender(). For now, the display ends up in an 
                 // inconsistent state.
-                that.activeScreen.afterRender($.extend({}, ctxt, {success: function() {
-                    that.activeScreen.recursiveDelegateEvents();
-                    that.removePreviousPageEl();
-                    ctxt.success();
-                }}));
+                that.activeScreen.afterRender();
+                that.activeScreen.recursiveDelegateEvents();
+                that.removePreviousPageEl();
+                ctxt.success();
             } else {
                 that.removePreviousPageEl();
                 ctxt.success();
