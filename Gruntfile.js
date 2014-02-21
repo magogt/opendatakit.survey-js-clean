@@ -123,7 +123,6 @@ module.exports = function (grunt) {
                     middleware: function (connect) {
                         return [
                             lrSnippet,
-                            mountFolder(connect, '.tmp'),
                             mountFolder(connect, baseDirForServer)
                         ];
                     }
@@ -135,7 +134,6 @@ module.exports = function (grunt) {
                     middleware: function (connect) {
                         return [
                             lrSnippet,
-                            mountFolder(connect, '.tmp'),
                             mountFolder(connect, 'test'),
                             mountFolder(connect, baseDirForServer)
                         ];
@@ -154,7 +152,8 @@ module.exports = function (grunt) {
         },
         open: {
             server: {
-                path: 'http://localhost:<%= connect.options.port %>'
+                path: 'http://localhost:<%= connect.options.port %>',
+                app: 'Google Chrome'
             }
         },
     });
