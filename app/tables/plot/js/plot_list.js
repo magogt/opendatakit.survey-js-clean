@@ -84,7 +84,7 @@ var displayGroup = function(idxStart) {
         var item = $('<li>');
         item.attr('rowId', data.getRowId(i));
         item.attr('class', 'item_space');
-        item.text(data.getData(i, 'name'));
+        item.text(data.getData(i, 'plot_name'));
                 
         /* Creates arrow icon (Nothing to edit here) */
         var chevron = $('<img>');
