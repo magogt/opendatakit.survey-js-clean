@@ -1,0 +1,4 @@
+table_keys=geotagger, plot, plotVisits
+geotagger.filename=assets/csv/geotagger.updated.csv
+plotVisits.filename=assets/csv/visit.example.csv
+plot.filename=assets/csv/plot.example.csv
