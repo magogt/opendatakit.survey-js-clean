@@ -3,88 +3,58 @@
     "survey": [
       {
         "type": "text",
-        "name": "plot_name",
+        "name": "name",
         "display": {
-          "text": "Enter the name of the plot:"
+          "text": "Enter a Name"
         },
         "_row_num": 2
       },
       {
-        "type": "geopoint",
-        "name": "location",
+        "type": "text",
+        "name": "phone_number",
         "display": {
-          "text": "Capture location:"
+          "text": "Enter a Phone Number"
         },
         "_row_num": 3
       },
       {
-        "type": "select_one",
-        "values_list": "plant_type",
-        "name": "planting",
+        "type": "send_sms",
+        "name": "send_message",
         "display": {
-          "text": "What type of plant is in this plot?"
+          "text": "Send an SMS"
         },
         "_row_num": 4
       }
     ],
-    "choices": [
+    "prompt_types": [
       {
-        "choice_list_name": "plant_type",
-        "data_value": "corn",
-        "display": {
-          "text": "Corn"
-        },
+        "prompt_type_name": "send_sms",
+        "type": "integer",
         "_row_num": 2
-      },
-      {
-        "choice_list_name": "plant_type",
-        "data_value": "bean",
-        "display": {
-          "text": "Bean"
-        },
-        "_row_num": 3
-      },
-      {
-        "choice_list_name": "plant_type",
-        "data_value": "cotton",
-        "display": {
-          "text": "Cotton"
-        },
-        "_row_num": 4
       }
     ],
     "settings": [
       {
         "setting_name": "form_id",
-        "value": "plot",
+        "value": "sms_example",
         "_row_num": 2
       },
       {
         "setting_name": "form_version",
-        "value": 20140331,
+        "value": 20141011,
         "_row_num": 3
       },
       {
         "setting_name": "survey",
         "display": {
-          "title": "Plot"
+          "title": "SMS Example"
         },
         "_row_num": 4
       },
       {
-        "setting_name": "instance_name",
-        "value": "plot_name",
-        "_row_num": 5
-      },
-      {
         "setting_name": "table_id",
-        "value": "plot",
-        "_row_num": 6
-      },
-      {
-        "setting_name": "disableSwipeNavigation",
-        "value": true,
-        "_row_num": 7
+        "value": "sms_example",
+        "_row_num": 5
       }
     ]
   },
@@ -109,35 +79,25 @@
     "settings": {
       "form_id": {
         "setting_name": "form_id",
-        "value": "plot",
+        "value": "sms_example",
         "_row_num": 2
       },
       "form_version": {
         "setting_name": "form_version",
-        "value": 20140331,
+        "value": 20141011,
         "_row_num": 3
       },
       "survey": {
         "setting_name": "survey",
         "display": {
-          "title": "Plot"
+          "title": "SMS Example"
         },
         "_row_num": 4
       },
-      "instance_name": {
-        "setting_name": "instance_name",
-        "value": "plot_name",
-        "_row_num": 5
-      },
       "table_id": {
         "setting_name": "table_id",
-        "value": "plot",
-        "_row_num": 6
-      },
-      "disableSwipeNavigation": {
-        "setting_name": "disableSwipeNavigation",
-        "value": true,
-        "_row_num": 7
+        "value": "sms_example",
+        "_row_num": 5
       },
       "_locales": {
         "setting_name": "_locales",
@@ -159,43 +119,16 @@
       "initial": {
         "setting_name": "survey",
         "display": {
-          "title": "Plot"
+          "title": "SMS Example"
         },
         "_row_num": 4
       }
     },
-    "choices": {
-      "plant_type": [
-        {
-          "choice_list_name": "plant_type",
-          "data_value": "corn",
-          "display": {
-            "text": "Corn"
-          },
-          "_row_num": 2
-        },
-        {
-          "choice_list_name": "plant_type",
-          "data_value": "bean",
-          "display": {
-            "text": "Bean"
-          },
-          "_row_num": 3
-        },
-        {
-          "choice_list_name": "plant_type",
-          "data_value": "cotton",
-          "display": {
-            "text": "Cotton"
-          },
-          "_row_num": 4
-        }
-      ]
-    },
+    "choices": {},
     "queries": {},
     "calculates": {},
     "model": {
-      "plot_name": {
+      "name": {
         "_defn": [
           {
             "_row_num": 2,
@@ -203,47 +136,28 @@
           }
         ],
         "type": "string",
-        "elementKey": "plot_name"
+        "elementKey": "name"
       },
-      "location": {
+      "phone_number": {
         "_defn": [
           {
             "_row_num": 3,
             "section_name": "survey"
           }
         ],
-        "type": "object",
-        "elementType": "geopoint",
-        "properties": {
-          "latitude": {
-            "type": "number",
-            "elementKey": "location_latitude"
-          },
-          "longitude": {
-            "type": "number",
-            "elementKey": "location_longitude"
-          },
-          "altitude": {
-            "type": "number",
-            "elementKey": "location_altitude"
-          },
-          "accuracy": {
-            "type": "number",
-            "elementKey": "location_accuracy"
-          }
-        },
-        "elementKey": "location"
+        "type": "string",
+        "elementKey": "phone_number"
       },
-      "planting": {
+      "send_message": {
         "_defn": [
           {
             "_row_num": 4,
             "section_name": "survey"
           }
         ],
-        "type": "string",
-        "valuesList": "plant_type",
-        "elementKey": "planting"
+        "prompt_type_name": "send_sms",
+        "type": "integer",
+        "elementKey": "send_message"
       }
     },
     "section_names": [
@@ -258,9 +172,9 @@
         "prompts": [
           {
             "type": "text",
-            "name": "plot_name",
+            "name": "name",
             "display": {
-              "text": "Enter the name of the plot:"
+              "text": "Enter a Name"
             },
             "_row_num": 2,
             "__rowNum__": 1,
@@ -270,29 +184,28 @@
             "promptIdx": 0
           },
           {
-            "type": "geopoint",
-            "name": "location",
+            "type": "text",
+            "name": "phone_number",
             "display": {
-              "text": "Capture location:"
+              "text": "Enter a Phone Number"
             },
             "_row_num": 3,
             "__rowNum__": 2,
             "_token_type": "prompt",
-            "_type": "geopoint",
+            "_type": "text",
             "_branch_label_enclosing_screen": "survey/_screen3",
             "promptIdx": 1
           },
           {
-            "type": "select_one",
-            "values_list": "plant_type",
-            "name": "planting",
+            "type": "send_sms",
+            "name": "send_message",
             "display": {
-              "text": "What type of plant is in this plot?"
+              "text": "Send an SMS"
             },
             "_row_num": 4,
             "__rowNum__": 3,
             "_token_type": "prompt",
-            "_type": "select_one",
+            "_type": "send_sms",
             "_branch_label_enclosing_screen": "survey/_screen4",
             "promptIdx": 2
           },
@@ -385,7 +298,7 @@
             "_type": "_section",
             "promptIdx": 1,
             "display": {
-              "title": "Plot"
+              "title": "SMS Example"
             },
             "_branch_label_enclosing_screen": "survey/0"
           },
