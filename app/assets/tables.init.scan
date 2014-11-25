@@ -1,0 +1,5 @@
+table_keys=scan_childvacc_822_pg1, scan_childvacc_822a_pg2, scan_childvacc_825_pg3, scan_childvacc_825_pg4
+scan_childvacc_822_pg1.filename=assets/csv/scan_childvacc_822_pg1.csv
+scan_childvacc_822a_pg2.filename=assets/csv/scan_childvacc_822a_pg2.csv
+scan_childvacc_825_pg3.filename=assets/csv/scan_childvacc_825_pg3.csv
+scan_childvacc_825_pg4.filename=assets/csv/scan_childvacc_825_pg4.csv

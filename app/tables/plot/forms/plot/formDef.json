@@ -1,0 +1,8 @@
+Exception: TypeError: 'null' is not an object (evaluating 'tag.match(/(\w+)="([^"]*)"/g).map')
+parsexmltag@xlsxconverter/js-xlsx/xlsx.js:230
+@xlsxconverter/js-xlsx/xlsx.js:675
+forEach@[native code]
+parseCT@xlsxconverter/js-xlsx/xlsx.js:684
+parseZip@xlsxconverter/js-xlsx/xlsx.js:881
+readSync@xlsxconverter/js-xlsx/xlsx.js:945
+global code@macGenConverter.js:44
