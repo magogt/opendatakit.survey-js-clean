@@ -1,19 +1,20 @@
-<h3>Contents</h3>
-<ul data-role="listview" data-inset="true">
+<h4>Contents</h4>
+<div class="btn-group-vertical" style="display:block; padding:5px">
     {{#each prompts}}
         {{#unless hideInContents}}
-		<li data-shadow="false" data-icon-shadow="true" data-theme="a" data-icon="carat-r" data-iconpos="right" class="select-contents-item" label="{{_branch_label_enclosing_screen}}">
-            <a class="select-contents-item-btn">
-				{{#if display.title}}
-					<h3 class="ui-li-heading">{{#if display.title}}{{{localize display.title}}}{{/if}}</h3>
-				{{else}}
-					<h3 class="ui-li-heading">{{#if display.text}}{{{localize display.text}}}{{/if}}</h3>
-				{{/if}}
-                <p class="ui-li-desc">{{formattedValueForContentsDisplay}}</p>
+            <a href="#" class="select-contents-item launch btn btn-default" role="button" label="{{_branch_label_enclosing_screen}}" style="padding:10px">
+                {{#if display.title}}
+                    <h4 class="contents-heading">{{#if display.title}}{{{localize display.title}}}{{/if}}</h4>
+                {{else}}
+                    {{#if display.text}}
+                        <h4 class="contents-heading">
+                            {{{localize display.text}}}
+                        </h4>
+                    {{/if}}
+                {{/if}}
+                <span class="glyphicon glyphicon-chevron-right pull-right center-in-contents"></span> 
+                <p class="contents-description">{{formattedValueForContentsDisplay}}</p>
             </a>
-		</li>
         {{/unless}}
-    {{else}}
-        <li><span>No prompts</span></li>
     {{/each}}
-</ul>
+</div>

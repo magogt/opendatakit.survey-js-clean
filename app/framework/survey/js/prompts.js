@@ -3,11 +3,11 @@
 /**
  * All  the standard prompts available to a form designer.
  */
-define(['database','opendatakit','controller','backbone','formulaFunctions','handlebars','promptTypes','jquery','underscore', 'mobiscroll', 'translations', 'handlebarsHelpers'],
-function(database,  opendatakit,  controller,  Backbone,  formulaFunctions,  Handlebars,  promptTypes,  $,       _,            mobiscroll,   translations, _hh) {
+define(['database','opendatakit','controller','backbone','formulaFunctions','handlebars','promptTypes','jquery','underscore','translations','handlebarsHelpers','datetimepicker'],
+function(database,  opendatakit,  controller,  Backbone,  formulaFunctions,  Handlebars,  promptTypes,  $,       _,           translations,   _hh) {
 verifyLoad('prompts',
-    ['database','opendatakit','controller','backbone','formulaFunctions','handlebars','promptTypes','jquery','underscore', 'mobiscroll', 'translations', 'handlebarsHelpers'],
-    [ database,  opendatakit,  controller,  Backbone,  formulaFunctions,  Handlebars,  promptTypes,  $,       _,            mobiscroll,   translations, _hh]);
+    ['database','opendatakit','controller','backbone','formulaFunctions','handlebars','promptTypes','jquery','underscore','translations', 'handlebarsHelpers','datetimepicker'],
+    [ database,  opendatakit,  controller,  Backbone,  formulaFunctions,  Handlebars,  promptTypes,  $,       _,           translations,   _hh,           $.fn.datetimepicker]);
 
 promptTypes.base = Backbone.View.extend({
     className: "odk-base",
@@ -558,7 +558,7 @@ promptTypes.instances = promptTypes.base.extend({
       evt.stopPropagation(true);
       evt.stopImmediatePropagation();
       ctxt.log('D',"prompts." + this.type + ".openInstance", "px: " + this.promptIdx);
-      this.controller.openInstance(ctxt, $(evt.target).attr('id'));
+      this.controller.openInstance(ctxt, $(evt.currentTarget).attr('id'));
     },
     deleteInstance: function(evt){
         var that = this;
@@ -570,7 +570,7 @@ promptTypes.instances = promptTypes.base.extend({
         database.delete_linked_instance_all($.extend({}, ctxt, {success: function() {
                 that.reRender(ctxt);
             }}),
-        model.table_id, $(evt.target).attr('id'));
+        model.table_id, $(evt.currentTarget).attr('id'));
     }
 });
 promptTypes.contents = promptTypes.base.extend({
@@ -579,7 +579,7 @@ promptTypes.contents = promptTypes.base.extend({
     valid: true,
     templatePath: 'templates/contents.handlebars',
     events: {
-        "click .select-contents-item-btn": "selectContentsItem"
+        "click .select-contents-item": "selectContentsItem"
     },
     selectContentsItem: function(evt) {
         var that = this;
@@ -736,10 +736,10 @@ promptTypes.linked_table = promptTypes._linked_type.extend({
                     }
                     
                     if (instanceList[i]["savepoint_type"] == "COMPLETE"){
-                        instanceList[i]["icon_class"] = "ui-icon-check";
+                        instanceList[i]["icon_class"] = "glyphicon-ok";
                     }  
                     else{
-                        instanceList[i]["icon_class"] = "ui-icon-alert";
+                        instanceList[i]["icon_class"] = "glyphicon-warning-sign";
                     }
                     //make the date more readable
                     instanceList[i]["savepoint_timestamp"] = opendatakit.getShortDateFormat(instanceList[i]["savepoint_timestamp"]);          
@@ -1312,6 +1312,14 @@ promptTypes.select_one_grid = promptTypes.select_one.extend({
         filteredChoices = _.map(filteredChoices, function(choice, idx) {
             var columns = 3;
             choice.colLetter = String.fromCharCode(97 + (idx % columns));
+            choice.isFirstInRow = false;
+            choice.isLastInRow = false;
+            if (idx % 3 === 0) {
+                choice.isFirstInRow = true;
+            }
+            if (idx % 3 === 2) {
+                choice.isLastInRow = true;
+            }
             return choice;
         });
 
@@ -1363,6 +1371,14 @@ promptTypes.select_multiple_grid = promptTypes.select_multiple.extend({
         filteredChoices = _.map(filteredChoices, function(choice, idx) {
             var columns = 3;
             choice.colLetter = String.fromCharCode(97 + (idx % columns));
+            choice.isFirstInRow = false;
+            choice.isLastInRow = false;
+            if (idx % 3 === 0) {
+                choice.isFirstInRow = true;
+            }
+            if (idx % 3 === 2) {
+                choice.isLastInRow = true;
+            }
             return choice;
         });
 
@@ -1528,19 +1544,14 @@ promptTypes.decimal = promptTypes.input_type.extend({
 });
 promptTypes.datetime = promptTypes.input_type.extend({
     type: "datetime",
-    useMobiscroll: true,
+    templatePath: "templates/datetimepicker.handlebars",  //TODO make template
+    usePicker: true,
     insideAfterRender: false,
-    scrollerAttributes: {
-        preset: 'datetime',
-        theme: 'jqm',
-        display: 'modal'
-        //Avoiding inline display because there
-        //can be some debouncing issues.
-        //Warning: mixed/clickpick mode doesn't work on galaxy nexus.
-        //mode: 'scroll'
-    },
+    timeFormat: "MM/DD/YYYY h:mm A",
+    showDate: true,
+    showTime: true,
     events: {
-        "change input": "modification",
+        "dp.hide": "modification",
         "swipeleft input": "stopPropagation",
         "swiperight input": "stopPropagation"
     },
@@ -1563,49 +1574,43 @@ promptTypes.datetime = promptTypes.input_type.extend({
         return false;
         */
     },
+    sameValue: function(ref, value) {
+        if (ref.valueOf() != value.valueOf()) {
+            return false;
+        } else {
+            return true;
+        }
+    },
     configureRenderContext: function(ctxt) {
         var that = this;
-        var renderContext = this.renderContext;
+        var renderContext = that.renderContext;
         if(this.detectNativeDatePicker()){
-            renderContext.inputAttributes.type = this.type;
-            this.useMobiscroll = false;
+            renderContext.inputAttributes.type = that.type;
+            that.usePicker = false;
             ctxt.success();
         } else {
-            $.mobiscroll.themes.jqm.defaults = {
-                jqmBody: 'd',
-                jqmHeader:'d',
-                jqmWheel: 'd',
-                jqmClickPick: 'd',
-                jqmSet: 'd',
-                jqmCancel: 'd'
-            };
-            //This is a monkey patch to disable hiding the datepicker when clicking outside of it.
-            //This is a problem because users may click twice while they wait for the date
-            //picker to open inadvertantly causing it to close.
-/*                var originalJqmInit = $.mobiscroll.themes.jqm.init;
-            $.mobiscroll.themes.jqm.init = function(elm, inst) {
-                originalJqmInit(elm, inst);
-                $('.dwo', elm).off('click');
-                $('.dwo').css("background-color", "white");
-                $('.dwo').css("opacity", ".5");
-            }; */
+            var dateValue = that.getValue();
+            if (dateValue !== undefined && dateValue !== null) {
+                renderContext.value = moment(dateValue).format(that.timeFormat);
+            }
             ctxt.success();
         }
     },
     modification: function(evt) {
         var that = this;
         if ( !that.insideAfterRender ) {
-            var value = that.$('input').mobiscroll('getDate');
-            var ref = that.getValue();
+            var date_value = that.$('input').data("DateTimePicker").getDate()
+            var value = (date_value === undefined || date_value === null) ? null : date_value.toDate(); 
+            var ref = that.getValue();  
             var rerender = ((ref == null || value == null) && (ref != value )) ||
-                    (ref != null && value != null && ref.valueOf() != value.valueOf());
+                (ref != null && value != null && !that.sameValue(ref, value));
             var ctxt = that.controller.newContext(evt);
             ctxt.log('D',"prompts." + that.type + ".modification", "px: " + that.promptIdx);
             var renderContext = that.renderContext;
             if ( value === undefined || value === null ) {
                 renderContext.value = '';
             } else {
-                renderContext.value = that.$('input').val();
+                renderContext.value = that.$('input').val(); 
             }
             // track original value
             var originalValue = that.getValue();
@@ -1625,79 +1630,48 @@ promptTypes.datetime = promptTypes.input_type.extend({
             }
         }
     },
-    
     afterRender: function() {
         var that = this;
-        if(this.useMobiscroll){
-            that.$('input').mobiscroll()[that.scrollerAttributes.preset](that.scrollerAttributes);
-            var value = that.getValue();
-            that.insideAfterRender = true;
-            if ( value === undefined || value === null ) {
-                that.$('input').mobiscroll('setDate',new Date(),false);
+        if(this.usePicker){
+            if (that.showDate && !that.showTime) {
+                that.$('input').datetimepicker({pickTime: false});
+            } else if (!that.showDate && that.showTime) {
+                that.$('input').datetimepicker({pickDate: false});
             } else {
-                that.$('input').mobiscroll('setDate',value, true);
+                that.$('input').datetimepicker();
             }
+
+            var value = that.getValue();      
+            that.insideAfterRender = true;
             that.insideAfterRender = false;
         }
     },
     beforeMove: function() {
         // the spinner will have already saved the value
+
+        // hide the datetimepicker in case it is still up
+        var that = this;
+        var dtp = that.$('input').data("DateTimePicker");
+        if (dtp) {
+            dtp.hide();
+        }
         return null;
     }
 });
 promptTypes.date = promptTypes.datetime.extend({
     type: "date",
-    scrollerAttributes: {
-        preset: 'date',
-        theme: 'jqm',
-        display: 'modal'
-    }
+    showTime: false,
+    timeFormat: "MM/DD/YYYY"
 });
 promptTypes.time = promptTypes.datetime.extend({
     type: "time",
-    scrollerAttributes: {
-        preset: 'time',
-        theme: 'jqm',
-        display: 'modal'
-    },
-    sameTime: function(ref, value) {
+    showDate: false,
+    timeFormat: "h:mm A",
+    sameValue: function(ref, value) {
         // these are milliseconds relative to Jan 1 1970...
         var ref_tod = (ref.valueOf() % 86400000);
         var value_tod = (value.valueOf() % 86400000);
-        return (ref_tod != value_tod);
-    },
-    modification: function(evt) {
-        var that = this;
-        if ( !that.insideAfterRender ) {
-            var value = that.$('input').mobiscroll('getDate');
-            var ref = that.getValue();
-            var rerender = ((ref === undefined || ref === null || value === undefined || value === null) && (ref != value )) ||
-                    (ref != null && value != null && that.sameTime(ref,value));
-            var ctxt = that.controller.newContext(evt);
-            ctxt.log('D',"prompts." + that.type + ".modification", "px: " + that.promptIdx);
-            var renderContext = that.renderContext;
-            if ( value === undefined || value === null ) {
-                renderContext.value = '';
-            } else {
-                renderContext.value = that.$('input').val();
-            }
-            // track original value
-            var originalValue = that.getValue();
-            that.setValueDeferredChange(value);
-            renderContext.invalid = !that.validateValue();
-            if ( renderContext.invalid ) {
-                value = originalValue;
-                // restore it...
-                that.setValueDeferredChange(originalValue);
-                rerender = true;
-            }
-            renderContext.value = value;
-            if ( rerender ) {
-                that.reRender(ctxt);
-            } else {
-                ctxt.success();
-            }
-        }
+        return (ref_tod === value_tod);
     }
 });
 /**
