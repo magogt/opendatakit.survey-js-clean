@@ -30,12 +30,10 @@ function displayGroup() {
         headingText.text(data.getData(i, 'Description'));
         itemHeading.attr('class', 'heading');
         
-        var srcMimeUri = data.getData(i, 'Image');
+        var uriRelative = data.getData(i, 'Image.uriFragment');
         var src = '';
-        if (srcMimeUri !== null && srcMimeUri !== "") {
-            var mimeUriObject = JSON.parse(srcMimeUri);
-            var uriRelative = mimeUriObject.uriFragment;
-            var uriAbsolute = control.getFileAsUrl(uriRelative);
+        if (uriRelative !== null && uriRelative !== "") {
+            var uriAbsolute = control.getRowFileAsUrl(data.getTableId(), data.getRowId(i), uriRelative);
             src = uriAbsolute;
         }
 
