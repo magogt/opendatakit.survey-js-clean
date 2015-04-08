@@ -89,16 +89,14 @@ var displayGroup = function(idxStart) {
         
         /* Creates arrow icon (Nothing to edit here) */
         var chevron = $('<img>');
-        chevron.attr('src', '../../../assets/img/little_arrow.png');
+        chevron.attr('src', control.getFileAsUrl('assets/img/little_arrow.png'));
         chevron.attr('class', 'chevron');
         item.append(chevron);
 
-        /*var addrMimeUri = data.getData(i, 'address_image_0');
+        /*var addrUriRelative = data.getData(i, 'address_image_0.uriFragment');
         var addrSrc = '';
-        if (addrMimeUri !== null && addrMimeUri !== "") {
-            var addrMimeUriObject = JSON.parse(addrMimeUri);
-            var addrUriRelative = addrMimeUriObject.uriFragment;
-            var addrUriAbsolute = control.getFileAsUrl(addrUriRelative);
+        if (addrUriRelative !== null && addrUriRelative !== "") {
+            var addrUriAbsolute = control.getRowFileAsUrl(data.getTableId(), data.getRowId(i), addrUriRelative);
             addrSrc = addrUriAbsolute;
         }
 
