@@ -20,7 +20,7 @@ exports.Follow = function Follow(
   if (!(this instanceof Follow)) {
     throw new Error('must use new');
   }
-  
+
   this.date = date;
   this.beginTime = beginTime;
   this.focalId = focalId;
@@ -31,7 +31,33 @@ exports.Follow = function Follow(
 
 
 /**
- * The observation of food item in the a particular timepoint.
+ * Represents an interval in a follow. This is essentially a subset of the
+ * information pertaining to a particular chimp during the follow. A
+ * FollowInterval might represent the time between 7:15 and 7:30 of a
+ * particular longer Follow, for instance.
+ *
+ * In an effort to make this even clearer, this object has been fabricated in
+ * order to allow someone to view a list of the timepoints they've seen during
+ * their Follow in order to quickly jump between them or resume where they left
+ * off in event of an app crash.
+ */
+exports.FollowInterval = function FollowInterval(
+    date,
+    beginTime,
+    focalId
+) {
+  if (!(this instanceof FollowInterval)) {
+    throw new Error('must use new');
+  }
+
+  this.date = date;
+  this.beginTime = beginTime;
+  this.focalId = focalId;
+};
+
+
+/**
+ * The observation of a chimp in the a particular timepoint.
  */
 exports.Chimp = function Chimp(
     rowId,
@@ -66,25 +92,7 @@ exports.Chimp = function Chimp(
 
 };
 
-<<<<<<< local
-=======
-/**
- * The observation of Food in the a particular timepoint.
- */
-exports.Food = function Food(
-    rowId, 
-    date, 
-    focalChimpId,
-    beginEating,
-    foodEaten,
-    foodPartEaten,
 
-) {
-
-}
-
-
->>>>>>> other
 /**
  * Create a chimp with the default values. This is ok to represent a chimp that
  * has not been observed at a given timepoint.
@@ -128,14 +136,12 @@ exports.createNewChimp = function(
 };
 
 
-<<<<<<< local
-
 /**
  * The observation of a food item at particular date & starttime.
  */
 exports.Food = function Food(
-  rowId, 
-  date, 
+  rowId,
+  date,
   focalChimpId,
   startTime,
   endTime,
@@ -145,35 +151,35 @@ exports.Food = function Food(
 
   if (!(this instanceof Food)) {
     throw new Error('must use new');
-  }  
+  }
 
   // for our model only--can be undefined
-  this.rowId = rowId; 
+  this.rowId = rowId;
 
   // data that we must set.
-  this.date = date; 
-  this.startTime = startTime; 
-  this.foodName = foodName; 
-  this.foodPartEaten = foodPartEaten; 
-  this.endTime = endTime; 
-  this.focalChimpId = focalChimpId; 
+  this.date = date;
+  this.startTime = startTime;
+  this.foodName = foodName;
+  this.foodPartEaten = foodPartEaten;
+  this.endTime = endTime;
+  this.focalChimpId = focalChimpId;
 };
 
 /**
  * Create a food object with the given values
  */
 exports.createNewFood = function(
-  date, 
+  date,
   focalChimpId,
   startTime,
   endTime,
   foodName,
   foodPartEaten
 ) {
-  var rowId = null; 
+  var rowId = null;
   var result = new exports.Food(
-    rowId, 
-    date, 
+    rowId,
+    date,
     focalChimpId,
     startTime,
     endTime,
@@ -181,15 +187,15 @@ exports.createNewFood = function(
     foodPartEaten
   );
 
-  return result; 
+  return result;
 };
 
 /**
  * The observation of a species at particular date.
  */
 exports.Species = function Species(
-  rowId, 
-  date, 
+  rowId,
+  date,
   focalChimpId,
   startTime,
   endTime,
@@ -199,35 +205,35 @@ exports.Species = function Species(
 
   if (!(this instanceof Species)) {
     throw new Error('must use new');
-  }  
+  }
 
   // for our model only--can be undefined
-  this.rowId = rowId; 
+  this.rowId = rowId;
 
   // data that we must set.
-  this.date = date; 
-  this.focalChimpId = focalChimpId;   
-  this.startTime = startTime; 
-  this.endTime = endTime;   
-  this.speciesName = speciesName; 
-  this.number = number; 
+  this.date = date;
+  this.focalChimpId = focalChimpId;
+  this.startTime = startTime;
+  this.endTime = endTime;
+  this.speciesName = speciesName;
+  this.number = number;
 };
 
 /**
  * Create a species object with the given values
  */
 exports.createNewSpecies = function(
-  date, 
+  date,
   focalChimpId,
   startTime,
   endTime,
   speciesName,
   number
 ) {
-  var rowId = null; 
+  var rowId = null;
   var result = new exports.Species(
-    rowId, 
-    date, 
+    rowId,
+    date,
     focalChimpId,
     startTime,
     endTime,
@@ -235,10 +241,5 @@ exports.createNewSpecies = function(
     number
   );
 
-  return result; 
+  return result;
 };
-
-=======
-
-
->>>>>>> other
