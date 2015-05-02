@@ -109,9 +109,9 @@ var certaintyLabels = {
  * The labels for certainty that are shown to a user.
  */
 var certaintyLabelsUser = {
-  notApplicable: '0',
-  certain: 'C',
-  uncertain: 'U'
+  notApplicable: ' ',
+  certain: '✓',
+  uncertain: '•'
 };
 
 
@@ -128,8 +128,8 @@ var withinFiveLabels = {
  * The labels we show users if for whether or not a chimp is within 5 meters.
  */
 var withinFiveLabelsUser = {
-  no: 'N',
-  yes: 'Y'
+  no: 'X',
+  yes: '✓'
 };
 
 
@@ -248,7 +248,7 @@ exports.updateIconForChimp = function(chimp) {
       console.log('unrecognized time label: ' + chimp.time);
   }
 
-  $('#' + id).attr('src', $img.src); 
+  $('#' + id).attr('src', $img.src);
 
 
 };
@@ -390,17 +390,18 @@ exports.updateUiForEndOfInterval = function() {
  * update the icon for selected chimp
  */
 exports.updateIconForSelectedChimp = function(chimp, chimpid, timeid) {
+  console.log('timeid: ' + timeid);
   var imagePaths = {
-  absent: './img/time_empty.png',
-  continuing: './img/time_continues.png',
-  arriveFirst: './img/time_arriveFirst.png',
-  arriveSecond: './img/time_arriveSecond.png',
-  arriveThird: './img/time_arriveThird.png',
-  departFirst: './img/time_departFirst.png',
-  departSecond: './img/time_departSecond.png',
-  departThird: './img/time_departThird.png'
+    absent: './img/time_empty.png',
+    continuing: './img/time_continues.png',
+    arriveFirst: './img/time_arriveFirst.png',
+    arriveSecond: './img/time_arriveSecond.png',
+    arriveThird: './img/time_arriveThird.png',
+    departFirst: './img/time_departFirst.png',
+    departSecond: './img/time_departSecond.png',
+    departThird: './img/time_departThird.png'
   };
-  var imageId = chimpid + "_img";  
+  var imageId = chimpid + '_img';
   //var $img = $('#' + imageId);
   //imageId.setAttribute("id", timeid);
 
@@ -655,11 +656,9 @@ exports.initializeChimpListeners = function() {
     exports.showClosestToEdit(true, chimp);
   });
 
-};
-
   // Food
   $('#button-food').on('click', function() {
-    console.log("food button clicked"); 
+    console.log('food button clicked');
     $('.container').addClass('nodisplay');
     $('.food-container').removeClass('nodisplay');
   });
@@ -667,7 +666,7 @@ exports.initializeChimpListeners = function() {
 
   // goes back to the page without saving any food or species data
   $('.go-back').on('click', function() {
-    console.log("back to main follow screen"); 
+    console.log('back to main follow screen');
     $('.container').removeClass('nodisplay');
     $('.food-container').addClass('nodisplay');
     $('.species-container').addClass('nodisplay');
@@ -675,12 +674,13 @@ exports.initializeChimpListeners = function() {
 
   // Species
   $('#button-species').on('click', function() {
-    console.log("species button clicked")
+    console.log('species button clicked');
     $('.container').addClass('nodisplay');
     $('.species-container').removeClass('nodisplay');
 
-  });  
+  });
 
+};
 
 /**
  * Plug in the click listeners in the UI.
@@ -689,7 +689,7 @@ exports.initializeListeners = function(control) {
 
   // saving the food item
   $('#saving_food').on('click', function() {
-    console.log("food being saved button clicked"); 
+    console.log('food being saved button clicked');
 
     // makes main display visibile and food page visible
     $('.container').removeClass('nodisplay');
@@ -700,15 +700,15 @@ exports.initializeListeners = function(control) {
     var foodPartVal = $('#food-part').val();
     var startTime =  $('#start_time_food').val();
     var endTime = $('#end_time_food').val();
-    var date = urls.getFollowDateFromUrl(); 
+    var date = urls.getFollowDateFromUrl();
     var focalChimpId = urls.getFocalChimpIdFromUrl();
 
-    if (foodPartVal != null) {
-      foodPartVal = foodPartVal.toLowerCase(); 
-    }   
+    if (foodPartVal) {
+      foodPartVal = foodPartVal.toLowerCase();
+    }
 
     var food = models.createNewFood(
-      date, 
+      date,
       focalChimpId,
       startTime,
       endTime,
@@ -716,16 +716,16 @@ exports.initializeListeners = function(control) {
       foodPartVal
     );
 
-    if (endTime == null || endTime == undefined || endTime.length == 0) {
-      db.writeRowForFood(control, food, false); 
+    if (endTime === null || endTime === undefined || endTime.length === 0) {
+      db.writeRowForFood(control, food, false);
     } else {
-      db.writeRowForFood(control, food, true); 
+      db.writeRowForFood(control, food, true);
     }
-  });  
+  });
 
   // saving the species item
   $('#saving_species').on('click', function() {
-    console.log("species being saved button clicked"); 
+    console.log('species being saved button clicked');
 
     // makes main display visibile and food page visible
     $('.container').removeClass('nodisplay');
@@ -736,15 +736,15 @@ exports.initializeListeners = function(control) {
     var startTime = $('#start_time_species').val();
     var endTime =  $('#end_time_species').val();
     var speciesNumber = $('#species_number').val();
-    var date = urls.getFollowDateFromUrl(); 
+    var date = urls.getFollowDateFromUrl();
     var focalChimpId = urls.getFocalChimpIdFromUrl();
 
-    if (speciesName != null) {
-      speciesName = foodPartVal.toLowerCase(); 
-    }   
+    if (speciesName) {
+      speciesName = speciesName.toLowerCase();
+    }
 
     var species = models.createNewSpecies(
-      date, 
+      date,
       focalChimpId,
       startTime,
       endTime,
@@ -752,12 +752,12 @@ exports.initializeListeners = function(control) {
       speciesNumber
     );
 
-    if (endTime == null || endTime == undefined || endTime.length == 0) {
-      db.writeRowForSpecies(control, species, false); 
+    if (endTime === null || endTime === undefined || endTime.length === 0) {
+      db.writeRowForSpecies(control, species, false);
     } else {
-      db.writeRowForSpecies(control, species, true); 
+      db.writeRowForSpecies(control, species, true);
     }
-  });    
+  });
 
   $('#next-button').on('click', function() {
     exports.showLoadingScreen(true);
@@ -807,22 +807,21 @@ exports.initializeListeners = function(control) {
  * Show the time (arrival/departure) indicators in the save div.
  */
 exports.showTimeIndicatorsToEdit = function(show, chimp) {
-  var $timeIndicators = null; 
+  var $timeIndicators = null;
   var chimpid =getIdForTimeImage(chimp);
-  var img_source = document.getElementById(chimpid).src;
-  var array_splitting_with_slash = img_source.split("/");
-  var current_img = array_splitting_with_slash[array_splitting_with_slash.length - 1];
-  if (current_img == "time_empty.png") {
+  var imgSource = document.getElementById(chimpid).src;
+  var arraySplittingWithSlash = imgSource.split('/');
+  var currentImg = arraySplittingWithSlash[
+    arraySplittingWithSlash.length - 1
+  ];
+  if (currentImg === 'time_empty.png') {
     $timeIndicators = $('.arrival');
   } else {
     $timeIndicators = $('.depart');
   }
   if (show) {
     $timeIndicators.removeClass('novisibility');
-  } 
-  
-  
-  if (!show) {
+  } else {
     $timeIndicators.addClass('novisibility');
     return;
   }
@@ -1091,7 +1090,7 @@ exports.initializeUi = function(control) {
 
   // initializing food and species containers
   $('.food-container').addClass('nodisplay');
-  $('.species-container').addClass('nodisplay');  
+  $('.species-container').addClass('nodisplay');
   // $( "#foods" ).combobox();
   // $( "#food-part" ).combobox();
 
@@ -1122,6 +1121,8 @@ exports.initializeUi = function(control) {
   $('#distance').addClass('novisibility');
   $('#state').addClass('novisibility');
   $('#close_focal').addClass('novisibility');
+
+  exports.updateUiForFollowTime();
 
   exports.initializeListeners(control);
 
@@ -1191,28 +1192,18 @@ exports.handleFirstTime = function(
     chimps
   );
 
-<<<<<<< local
   // update chimp for previous timepoint
-  var previousTime = util.decrementTime(followStartTime); 
+  var previousTime = util.decrementTime(followStartTime);
   var previousTableData = db.getTableDataForTimePoint(
     control,
     date,
     previousTime,
     focalChimpId
   );
-  var prevChimps = db.convertTableDataToChimps(previousTableData); 
+  var prevChimps = db.convertTableDataToChimps(previousTableData);
 
-  chimps = db.updateChimpsForPreviousTimepoint(prevChimps, chimps); 
+  chimps = db.updateChimpsForPreviousTimepoint(prevChimps, chimps);
 
-=======
-  // update chimp for previous timepoint
-  var previousTime = util.decrementTime(followStartTime); 
-  var table = exports.getTableDataforTimePoint(control, date, previousTime, focalChimpId);
-  var prevChimps = exports.convertTableDataToChimps(table); 
-
-  chimps = exports.updateChimpsForPreviousTimepoint(prevChimps, chimps); 
-
->>>>>>> other
   // 2) write the chimps
   chimps.forEach(function(chimp) {
     db.writeRowForChimp(control, chimp, false);
